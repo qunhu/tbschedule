@@ -102,8 +102,8 @@ public class TBScheduleManagerStatic extends TBScheduleManager {
     }
 
     /**
-     * 定时向数据配置中心更新当前服务器的心跳信息。 如果发现本次更新的时间如果已经超过了，
-     * 服务器死亡的心跳周期，则不能在向服务器更新信息。 而应该当作新的服务器，进行重新注册。
+     * 定时向数据配置中心更新当前服务器的心跳信息。
+     * 如果发现本次更新的时间已经超过了服务器死亡的心跳周期，则不能在向服务器更新信息。 而应该当作新的服务器，进行重新注册。
      */
     @Override
     public void refreshScheduleServerInfo() throws Exception {
@@ -168,9 +168,15 @@ public class TBScheduleManagerStatic extends TBScheduleManager {
     }
 
     /**
-     * 根据当前调度服务器的信息，重新计算分配所有的调度任务 任务的分配是需要加锁，避免数据分配错误。为了避免数据锁带来的负面作用，通过版本号来达到锁的目的
+     * 根据当前调度服务器的信息，重新计算分配所有的调度任务 任务的分配是需要加锁，避免数据分配错误。
+     * 为了避免数据锁带来的负面作用，通过版本号来达到锁的目的
      * <p>
-     * 1、获取任务状态的版本号 2、获取所有的服务器注册信息和任务队列信息 3、清除已经超过心跳周期的服务器注册信息 3、重新计算任务分配 4、更新任务状态的版本号【乐观锁】 5、根系任务队列的分配信息
+     * 1、获取任务状态的版本号
+     * 2、获取所有的服务器注册信息和任务队列信息
+     * 3、清除已经超过心跳周期的服务器注册信息
+     * 4、重新计算任务分配
+     * 5、更新任务状态的版本号【乐观锁】
+     * 6、根系任务队列的分配信息
      */
     public void assignScheduleTask() throws Exception {
         scheduleCenter.clearExpireScheduleServer(this.currenScheduleServer.getTaskType(),
@@ -193,7 +199,9 @@ public class TBScheduleManagerStatic extends TBScheduleManager {
     }
 
     /**
-     * 重新加载当前服务器的任务队列 1、释放当前服务器持有，但有其它服务器进行申请的任务队列 2、重新获取当前服务器的处理队列
+     * 重新加载当前服务器的任务队列
+     * 1、释放当前服务器持有，但有其它服务器进行申请的任务队列
+     * 2、重新获取当前服务器的处理队列
      * <p>
      * 为了避免此操作的过度，阻塞真正的数据处理能力。系统设置一个重新装载的频率。例如1分钟
      * <p>

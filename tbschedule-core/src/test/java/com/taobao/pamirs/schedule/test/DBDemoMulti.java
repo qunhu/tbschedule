@@ -40,7 +40,17 @@ public class DBDemoMulti implements IScheduleTaskDealMulti<Long> {
         };
     }
 
-    public List<Long> selectTasks(String taskParameter, String ownSign, int taskItemNum, List<TaskItemDefine> queryCondition, int fetchNum) throws Exception {
+    /**
+     * 根据条件，查询当前调度服务器可处理的任务
+     *
+     * @param taskParameter 任务的自定义参数
+     * @param ownSign 当前环境名称
+     * @param taskItemNum 当前任务类型的任务队列数量
+     * @param taskItemList 当前调度服务器，分配到的可处理队列
+     * @param eachFetchDataNum 每次获取数据的数量
+     */
+    public List<Long> selectTasks(String taskParameter, String ownSign, int taskItemNum,
+                                  List<TaskItemDefine> queryCondition, int fetchNum) throws Exception {
         List<Long> result = new ArrayList<Long>();
         if (queryCondition.size() == 0) {
             return result;
@@ -87,6 +97,7 @@ public class DBDemoMulti implements IScheduleTaskDealMulti<Long> {
         long id = 0;
         try {
             conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
             for (int index = 0; index < tasks.length; index++) {
                 id = ((Long) tasks[index]).longValue();
                 log.debug("处理任务：" + id + " 成功！");

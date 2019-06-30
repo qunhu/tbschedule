@@ -1,5 +1,5 @@
 CREATE TABLE SCHEDULE_TEST (
-  ID bigint(15) default NULL,
+  ID bigint(15),
   DEAL_COUNT int(11) default NULL,
   STS varchar(2) default NULL,
   OWN_SIGN varchar(50) not NULL,

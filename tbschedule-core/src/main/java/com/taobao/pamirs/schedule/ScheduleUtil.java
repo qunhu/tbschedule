@@ -121,6 +121,11 @@ public class ScheduleUtil {
     }
 
     public static void main(String[] args) {
+        System.out.println(printArray(assignTaskNumber(3, 8, 0)));
+        System.out.println(printArray(assignTaskNumber(1, 3, 1)));
+
+        System.out.println("-----------------");
+
         System.out.println(printArray(assignTaskNumber(1, 10, 0)));
         System.out.println(printArray(assignTaskNumber(2, 10, 0)));
         System.out.println(printArray(assignTaskNumber(3, 10, 0)));

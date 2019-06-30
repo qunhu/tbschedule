@@ -18,10 +18,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 
 /**
- * 1、任务调度分配器的目标： 让所有的任务不重复，不遗漏的被快速处理。 2、一个Manager只管理一种任务类型的一组工作线程。 3、在一个JVM里面可能存在多个处理相同任务类型的Manager，也可能存在处理不同任务类型的Manager。
- * 4、在不同的JVM里面可以存在处理相同任务的Manager 5、调度的Manager可以动态的随意增加和停止
+ * 1、任务调度分配器的目标： 让所有的任务不重复，不遗漏的被快速处理。
+ * 2、一个Manager只管理一种任务类型的一组工作线程。
+ * 3、在一个JVM里面可能存在多个处理相同任务类型的Manager，也可能存在处理不同任务类型的Manager。
+ * 4、在不同的JVM里面可以存在处理相同任务的Manager
+ * 5、调度的Manager可以动态的随意增加和停止
  * <p>
- * 主要的职责： 1、定时向集中的数据配置中心更新当前调度服务器的心跳状态 2、向数据配置中心获取所有服务器的状态来重新计算任务的分配。这么做的目标是避免集中任务调度中心的单点问题。
+ * 主要的职责：
+ * 1、定时向集中的数据配置中心更新当前调度服务器的心跳状态
+ * 2、向数据配置中心获取所有服务器的状态来重新计算任务的分配。这么做的目标是避免集中任务调度中心的单点问题。
  * 3、在每个批次数据处理完毕后，检查是否有其它处理服务器申请自己把持的任务队列，如果有，则释放给相关处理服务器。
  * <p>
  * 其它： 如果当前服务器在处理当前任务的时候超时，需要清除当前队列，并释放已经把持的任务。并向控制主动中心报警。
@@ -390,6 +395,10 @@ abstract class TBScheduleManager implements IStrategyTask {
     }
 }
 
+/**
+ * 主要职责是更新/server目录下对应的调度管理器心跳信息，
+ * 清除过期的scheduleServer，如果是leader则进行任务项的分配。
+ */
 class HeartBeatTimerTask extends java.util.TimerTask {
 
     private static transient Logger log = LoggerFactory.getLogger(HeartBeatTimerTask.class);
@@ -433,6 +442,7 @@ class PauseOrResumeScheduleTask extends java.util.TimerTask {
             Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             this.cancel();// 取消调度任务
             Date current = new Date(System.currentTimeMillis());
+            // 解析CronExpression
             CronExpression cexp = new CronExpression(this.cronTabExpress);
             Date nextTime = cexp.getNextValidTimeAfter(current);
             if (this.type == TYPE_PAUSE) {
